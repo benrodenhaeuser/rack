@@ -1,24 +1,15 @@
 require_relative 'advice'
+require_relative 'monroe'
 
-class App
-  def erb(filename, local = {})
-    b = binding
-    message = local[:message]
-    content = File.read("views/#{filename}.erb")
-    ERB.new(content).result(b)
-  end
+class App < Monroe
 
-  def response(status, headers, body = '')
-    body = yield if block_given?
-    [status, headers, [body]]
-  end
-
-  # the env hash is how the rack passes information about the request to our app, i.e., rack receives the request from Webrick and passes on the information about the request to our app, using the env hash. 
+  # the env hash is how the rack passes information about the request to our app, i.e., rack receives the request from Webrick and passes on the information about the request to our app, using the env hash.
   def call(env)
     case env['REQUEST_PATH']
     when '/'
       status = '200'
       headers = {"Content-Type" => 'text/html'}
+      # response and erb methods defined by Monroe class from which App inherits
       response(status, headers) do
         erb(:index)
       end
